@@ -22,5 +22,5 @@ def parse_subdirectories_in_path(path: str) -> List[Dict]:
     return ct_scan_list
 
 
-def move_from_raw_to_deid():
+def deidentify_dicom(path: str):
     return

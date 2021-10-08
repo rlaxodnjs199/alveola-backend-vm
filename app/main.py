@@ -1,10 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.v1.directory.endpoints import directory_router
+from app.api.v1.ctscan.endpoints import CTscan_router
 
 app = FastAPI()
-app.include_router(directory_router)
+app.include_router(CTscan_router)
 
 origins = ["http://localhost:3000", "localhost:3000"]
 
