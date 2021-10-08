@@ -16,7 +16,7 @@ async def get_raw_ct_scan_list():
 
 @CTscan.get("/deid")
 async def get_deid_ct_scan_list():
-    return {"DEID_PATH": config.DEID_CT_PATH}
+    return util.parse_subdirectories_in_path(config.DEID_CT_PATH)
 
 
 @CTscan.get("/vida-processed")
@@ -25,5 +25,4 @@ async def get_vida_processed_ct_scan_list():
 
 @CTscan.post("/de-identify")
 async def deidentfy_raw_ct_scans(ct_scan_list: List[Dict]):
-    print(ct_scan_list)
-    return {'msg': 'success'}
+    return util.deidentify_dicom(ct_scan_list)
