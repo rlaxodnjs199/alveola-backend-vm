@@ -2,7 +2,7 @@ import os
 from typing import List, Dict, Union
 from fastapi import HTTPException
 from pydicom import Dataset, dcmread
-from app import config
+from app.core.config import settings
 
 
 def _get_top_level_subdirectories(path: str) -> List[str]:
@@ -32,7 +32,7 @@ def parse_subdirectories_in_path(path: str) -> List[Dict]:
 def deidentify_dicom(ct_scan: Dict):
     def _get_raw_dcm_dir_path(ct_scan: Dict):
         try:
-            raw_dcm_dir_path = f'{config.RAW_CT_PATH}/'
+            raw_dcm_dir_path = f'{settings.RAW_CT_PATH}/'
             raw_dcm_dir_path += "DCM_{acquisition_date}_{project}_{participant_id}_{worker}".format(**ct_scan)
         except:
             raise HTTPException(status_code=400, detail="Raw CT folder syntax error")
@@ -109,7 +109,7 @@ def deidentify_dicom(ct_scan: Dict):
         deid_dcm: Dataset,
         deid_dcm_dirname: str,
         deid_dcm_filename: str,
-        deid_dcm_basedir=config.DEID_CT_PATH,
+        deid_dcm_basedir=settings.DEID_CT_PATH,
     ):
         if not os.path.exists(f"{deid_dcm_basedir}/{deid_dcm_dirname}"):
             os.makedirs(f"{deid_dcm_basedir}/{deid_dcm_dirname}")
