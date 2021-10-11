@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+  postgres:
+    container_name: alveola_pg_container
+    image: postgres:13.4
+    restart: always
+    environment:
+      POSTGRES_USER: twkim
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: alveola
+    volumes:
+      - pgdata:/var/lib/postgresql/data/
+    ports:
+      - 5432:5432
+
+  pgadmin:
+    container_name: alveola_pgadmin4_container
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: tkim3@kumc.edu
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - 5050:80
+
+volumes:
+  pgdata:
