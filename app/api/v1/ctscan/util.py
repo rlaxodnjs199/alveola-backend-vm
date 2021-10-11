@@ -29,19 +29,14 @@ def parse_subdirectories_in_path(path: str) -> List[Dict]:
     return ct_scan_list
 
 
-def deidentify_dicom(ct_scan_list: str):
-    def _get_raw_dcm_dir_paths(ct_scan_list: str):
+def deidentify_dicom(ct_scan: Dict):
+    def _get_raw_dcm_dir_path(ct_scan: Dict):
         try:
-            raw_dcm_dir_paths = [
-                f"{config.RAW_CT_PATH}/"
-                + "DCM_{acquisition_date}_{project}_{participant_id}_{worker}".format(
-                    **ct_scan
-                )
-                for ct_scan in ct_scan_list
-            ]
+            raw_dcm_dir_path = f'{config.RAW_CT_PATH}/'
+            raw_dcm_dir_path += "DCM_{acquisition_date}_{project}_{participant_id}_{worker}".format(**ct_scan)
         except:
             raise HTTPException(status_code=400, detail="Raw CT folder syntax error")
-        return raw_dcm_dir_paths
+        return raw_dcm_dir_path
 
     def _get_dcm_paths_from_dir(dcm_dir: str):
         for base, _, files in os.walk(dcm_dir):
@@ -131,19 +126,18 @@ def deidentify_dicom(ct_scan_list: str):
 
         return
 
-    raw_dcm_dir_paths = _get_raw_dcm_dir_paths(ct_scan_list)
-    for raw_dcm_dir_path in raw_dcm_dir_paths:
-        try:
-            patient_id = _get_patient_id_from_dir(raw_dcm_dir_path)
-            deid_dcm_dirname = os.path.basename(raw_dcm_dir_path)
-            for raw_dcm_path in _get_dcm_paths_from_dir(raw_dcm_dir_path):
-                deid_dcm = _deidentify_dcm_slice(raw_dcm_path, patient_id)
-                deid_dcm_filename = os.path.basename(raw_dcm_path)
-                _save_dcm_slice(deid_dcm, deid_dcm_dirname, deid_dcm_filename)
-        except:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Error occurred while de-identifying CT scan on path: {raw_dcm_dir_path}",
-            )
+    raw_dcm_dir_path = _get_raw_dcm_dir_path(ct_scan)
+    try:
+        patient_id = _get_patient_id_from_dir(raw_dcm_dir_path)
+        deid_dcm_dirname = os.path.basename(raw_dcm_dir_path)
+        for raw_dcm_path in _get_dcm_paths_from_dir(raw_dcm_dir_path):
+            deid_dcm = _deidentify_dcm_slice(raw_dcm_path, patient_id)
+            deid_dcm_filename = os.path.basename(raw_dcm_path)
+            _save_dcm_slice(deid_dcm, deid_dcm_dirname, deid_dcm_filename)
+    except:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Error occurred while de-identifying CT scan on path: {raw_dcm_dir_path}",
+        )
 
     return {"msg": "Dicom deidentification succeeded"}

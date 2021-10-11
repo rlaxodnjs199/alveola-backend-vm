@@ -24,5 +24,5 @@ async def get_vida_processed_ct_scan_list():
     return {"VIDA_PROCESSED_PATH": config.VIDA_PROCESSED_CT_PATH}
 
 @CTscan.post("/de-identify")
-async def deidentfy_raw_ct_scans(ct_scan_list: List[Dict]):
-    return util.deidentify_dicom(ct_scan_list)
+async def deidentfy_raw_ct_scans(ct_scan: Dict):
+    return util.deidentify_dicom(ct_scan)
