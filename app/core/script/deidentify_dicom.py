@@ -1,39 +1,19 @@
 import os
-from typing import List, Dict, Union
+from typing import List, Dict
 from fastapi import HTTPException
 from pydicom import Dataset, dcmread
 from app.core.config import settings
 
 
-def _get_top_level_subdirectories(path: str) -> List[str]:
-    for _, dirs, _ in os.walk(path):
-        return dirs
-
-
-def parse_subdirectories_in_path(path: str) -> List[Dict]:
-    subdirs = _get_top_level_subdirectories(path)
-    ct_scan_list = []
-    try:
-        for subdir in subdirs:
-            dict = {}
-            _, date, project, participant_id, worker = subdir.split("_")
-            dict["acquisition_date"] = date
-            dict["project"] = project
-            dict["participant_id"] = participant_id
-            dict["worker"] = worker
-
-            ct_scan_list.append(dict)
-    except:
-        raise HTTPException(status_code=400, detail="Raw CT folder syntax error")
-
-    return ct_scan_list
-
-
-def deidentify_dicom(ct_scan: Dict):
+def execute(ct_scan: Dict):
     def _get_raw_dcm_dir_path(ct_scan: Dict):
         try:
-            raw_dcm_dir_path = f'{settings.RAW_CT_PATH}/'
-            raw_dcm_dir_path += "DCM_{acquisition_date}_{project}_{participant_id}_{worker}".format(**ct_scan)
+            raw_dcm_dir_path = f"{settings.RAW_CT_PATH}/"
+            raw_dcm_dir_path += (
+                "DCM_{acquisition_date}_{project}_{participant_id}_{worker}".format(
+                    **ct_scan
+                )
+            )
         except:
             raise HTTPException(status_code=400, detail="Raw CT folder syntax error")
         return raw_dcm_dir_path

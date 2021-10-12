@@ -2,6 +2,7 @@ from typing import List, Dict
 from fastapi import APIRouter
 
 from app.core.config import settings
+from app.core.script import deidentify_dicom
 from . import util
 
 CTscan_router = CTscan = APIRouter(
@@ -23,6 +24,7 @@ async def get_deid_ct_scan_list():
 async def get_vida_processed_ct_scan_list():
     return {"VIDA_PROCESSED_PATH": settings.VIDA_PROCESSED_CT_PATH}
 
+
 @CTscan.post("/de-identify")
 async def deidentfy_raw_ct_scans(ct_scan: Dict):
-    return util.deidentify_dicom(ct_scan)
+    return deidentify_dicom.execute(ct_scan)
