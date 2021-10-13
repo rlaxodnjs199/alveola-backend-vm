@@ -13,3 +13,4 @@ class Scan(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     worker = Column(String)
     status = Column(String, default="De-identified")
+    path = Column(String)

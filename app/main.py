@@ -2,10 +2,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
-from app.api.v1.scan.endpoints import CTscan_router
+from app.api.v1.scan.endpoints import scan_router
+from app.db.pgsql.session import init_db
 
-app = FastAPI()
-app.include_router(CTscan_router)
+
+app = FastAPI(debug=settings.DEBUG)
+app.include_router(scan_router)
 
 origins = ["http://localhost:3000", "localhost:3000"]
 
@@ -16,6 +18,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.on_event("startup")
+async def on_startup():
+    await init_db()
 
 
 @app.get("/", tags=["root"])
