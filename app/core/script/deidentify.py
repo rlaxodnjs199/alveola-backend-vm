@@ -1,17 +1,18 @@
 import os
-from typing import List, Dict
+from typing import Dict
 from fastapi import HTTPException
 from pydicom import Dataset, dcmread
 from app.core.config import settings
+from app.api.v1.scan.schemas import ScanCreate
 
 
-def execute(ct_scan: Dict):
-    def _get_raw_dcm_dir_path(ct_scan: Dict):
+def execute(raw_CT_scan: Dict) -> ScanCreate:
+    def _get_raw_dcm_dir_path(raw_CT_scan: Dict):
         try:
             raw_dcm_dir_path = f"{settings.RAW_CT_PATH}/"
             raw_dcm_dir_path += (
                 "DCM_{acquisition_date}_{project}_{participant_id}_{worker}".format(
-                    **ct_scan
+                    **raw_CT_scan
                 )
             )
         except:
@@ -106,7 +107,7 @@ def execute(ct_scan: Dict):
 
         return
 
-    raw_dcm_dir_path = _get_raw_dcm_dir_path(ct_scan)
+    raw_dcm_dir_path = _get_raw_dcm_dir_path(raw_CT_scan)
     try:
         patient_id = _get_patient_id_from_dir(raw_dcm_dir_path)
         deid_dcm_dirname = os.path.basename(raw_dcm_dir_path)
@@ -120,4 +121,7 @@ def execute(ct_scan: Dict):
             detail=f"Error occurred while de-identifying CT scan on path: {raw_dcm_dir_path}",
         )
 
-    return {"msg": "Dicom deidentification succeeded"}
+    deid_CT_scan = raw_CT_scan
+    deid_CT_scan["path"] = f"{settings.DEID_CT_PATH}/{deid_dcm_dirname}"
+
+    return deid_CT_scan
