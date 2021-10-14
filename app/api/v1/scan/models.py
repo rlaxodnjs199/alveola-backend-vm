@@ -6,6 +6,7 @@ from app.db.pgsql.base_model import Base
 class Scan(Base):
     __tablename__ = "scan"
 
+    folder_name = Column(String, nullable=False, unique=True)
     project = Column(String, nullable=False)
     participant_id = Column(String, nullable=False)
     acquisition_date = Column(Date, nullable=False)

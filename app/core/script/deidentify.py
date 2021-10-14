@@ -1,4 +1,5 @@
 import os
+import datetime
 from typing import Dict
 from fastapi import HTTPException
 from pydicom import Dataset, dcmread
@@ -86,6 +87,16 @@ def execute(raw_CT_scan: Dict) -> ScanCreate:
 
         return dicom_to_deidentify
 
+    def _construct_deid_CT_scan(raw_CT_scan: Dict, deid_dcm_dirname: str) -> ScanCreate:
+        deid_CT_scan = raw_CT_scan
+        deid_CT_scan["acquisition_date"] = datetime.datetime.strptime(
+            raw_CT_scan["acquisition_date"], "%Y%m%d"
+        ).date()
+        deid_CT_scan["folder_name"] = deid_dcm_dirname
+        deid_CT_scan["path"] = f"{settings.DEID_CT_PATH}/{deid_dcm_dirname}"
+
+        return ScanCreate(**deid_CT_scan)
+
     def _save_dcm_slice(
         deid_dcm: Dataset,
         deid_dcm_dirname: str,
@@ -121,7 +132,6 @@ def execute(raw_CT_scan: Dict) -> ScanCreate:
             detail=f"Error occurred while de-identifying CT scan on path: {raw_dcm_dir_path}",
         )
 
-    deid_CT_scan = raw_CT_scan
-    deid_CT_scan["path"] = f"{settings.DEID_CT_PATH}/{deid_dcm_dirname}"
+    deid_CT_scan = _construct_deid_CT_scan(raw_CT_scan, deid_dcm_dirname)
 
     return deid_CT_scan

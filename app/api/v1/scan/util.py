@@ -4,7 +4,7 @@ from typing import List, Dict
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import HTTPException
-from sqlalchemy import select
+from sqlalchemy import select, text
 from app.api.v1.scan import schemas
 
 from . import models
@@ -44,16 +44,26 @@ async def get_scan_list(db: AsyncSession):
     return scan_list
 
 
+async def _is_scan_duplicate(folder_name: str, db: AsyncSession) -> bool:
+    stmt = text(f"SELECT folder_name FROM scan WHERE folder_name='{folder_name}'")
+    query_result = await db.execute(stmt)
+    if query_result.scalars().all():
+        return True
+    return False
+
+
 async def create_scan(deid_CT_scan: schemas.ScanCreate, db: AsyncSession):
-    scan_to_insert = models.Scan(**deid_CT_scan)
-    scan_to_insert.acquisition_date = datetime.datetime.strptime(
-        scan_to_insert.acquisition_date, "%Y%m%d"
-    ).date()
+    is_scan_duplicate: bool = await _is_scan_duplicate(deid_CT_scan.folder_name, db)
+    if is_scan_duplicate:
+        raise HTTPException(
+            status_code=400, detail=f"Scan {deid_CT_scan.folder_name} already exists"
+        )
+    scan_to_insert = models.Scan(**deid_CT_scan.dict())
     db.add(scan_to_insert)
     await db.commit()
     await db.refresh(scan_to_insert)
 
-    return scan_to_insert
+    return {"msg": f"Add scan {deid_CT_scan.folder_name} success"}
 
 
 def delete_scan():

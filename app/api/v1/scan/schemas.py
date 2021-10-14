@@ -15,6 +15,7 @@ class Scan(BaseModel):
 
 class ScanCreate(Scan):
     path: str
+    folder_name: str
 
 
 class DeidScan(Scan):
