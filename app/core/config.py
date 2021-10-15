@@ -19,6 +19,7 @@ class GlobalConfig(BaseSettings):
     RAW_CT_PATH = config("RAW_CT_PATH", default="Path not set")
     DEID_CT_PATH = config("DEID_CT_PATH", default="Path not set")
     VIDA_PROCESSED_CT_PATH = config("VIDA_PROCESSED_CT_PATH", default="Path not set")
+    DB_TABLE_SCAN = config("DB_TABLE_SCAN")
 
     class Config:
         case_sensitive = True

@@ -1,11 +1,11 @@
 import os
-import datetime
 from typing import List, Dict
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import HTTPException
 from sqlalchemy import select, text
 from app.api.v1.scan import schemas
+from app.core.config import settings
 
 from . import models
 
@@ -45,7 +45,9 @@ async def get_scan_list(db: AsyncSession):
 
 
 async def _is_scan_duplicate(folder_name: str, db: AsyncSession) -> bool:
-    stmt = text(f"SELECT folder_name FROM scan WHERE folder_name='{folder_name}'")
+    stmt = text(
+        f"SELECT folder_name FROM {settings.DB_TABLE_SCAN} WHERE folder_name='{folder_name}'"
+    )
     query_result = await db.execute(stmt)
     if query_result.scalars().all():
         return True
