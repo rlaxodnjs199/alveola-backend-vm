@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from loguru import logger
 
 from app.core.config import settings
 from app.api.v1.scan.endpoints import scan_router
@@ -23,6 +24,7 @@ app.add_middleware(
 @app.on_event("startup")
 async def on_startup():
     await init_db()
+    logger.info("DB session created")
 
 
 @app.get("/", tags=["root"])

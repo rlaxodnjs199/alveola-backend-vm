@@ -2,7 +2,7 @@ from functools import lru_cache
 from enum import Enum
 from typing import Optional
 from starlette.config import Config
-from pydantic import BaseSettings, PostgresDsn
+from pydantic import BaseSettings
 
 config = Config(".env")
 
