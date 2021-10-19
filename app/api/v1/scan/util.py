@@ -44,22 +44,7 @@ async def get_scan_list(db: AsyncSession):
     return scan_list
 
 
-async def _is_scan_duplicate(folder_name: str, db: AsyncSession) -> bool:
-    stmt = text(
-        f"SELECT folder_name FROM {settings.DB_TABLE_SCAN} WHERE folder_name='{folder_name}'"
-    )
-    query_result = await db.execute(stmt)
-    if query_result.scalars().all():
-        return True
-    return False
-
-
 async def create_scan(deid_CT_scan: schemas.ScanCreate, db: AsyncSession):
-    is_scan_duplicate: bool = await _is_scan_duplicate(deid_CT_scan.folder_name, db)
-    if is_scan_duplicate:
-        raise HTTPException(
-            status_code=400, detail=f"Scan {deid_CT_scan.folder_name} already exists"
-        )
     scan_to_insert = models.Scan(**deid_CT_scan.dict())
     db.add(scan_to_insert)
     await db.commit()

@@ -36,6 +36,9 @@ async def get_deid_scan_by_id(scan_id: int, db=Depends(get_db)):
 
 
 @scan.post("/deid")
-async def create_deid_CT_scan(raw_CT_scan: Dict, db=Depends(get_db)):
-    deid_CT_scan = deidentify.execute(raw_CT_scan)
-    return await util.create_scan(deid_CT_scan, db)
+async def create_deid_CT_scan(raw_CT_scan: schemas.Scan, db=Depends(get_db)):
+    deid_CT_scan_list = deidentify.execute(raw_CT_scan, db)
+    async for deid_CT_scan in deid_CT_scan_list:
+        await util.create_scan(deid_CT_scan, db)
+
+    return {"msg": "success"}
