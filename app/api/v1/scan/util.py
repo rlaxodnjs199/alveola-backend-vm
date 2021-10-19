@@ -1,11 +1,11 @@
 import os
 from typing import List, Dict
+from operator import attrgetter
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import HTTPException
-from sqlalchemy import select, text
+from sqlalchemy import select
 from app.api.v1.scan import schemas
-from app.core.config import settings
 
 from . import models
 
@@ -34,14 +34,20 @@ def parse_subdirectories_in_path(path: str) -> List[Dict]:
     return ct_scan_list
 
 
-async def get_scan_list(db: AsyncSession):
+def modify_acquisition_date_format(
+    deid_CT_scan_list: schemas.DeidScan,
+) -> List[schemas.DeidScan]:
+    for scan in deid_CT_scan_list:
+        scan.acquisition_date = scan.acquisition_date.strftime("%Y%m%d")
+    return deid_CT_scan_list
+
+
+async def get_scan_list(db: AsyncSession) -> List[schemas.DeidScan]:
     stmt = select(models.Scan)
     query_result = await db.execute(stmt)
-    scan_list = [
-        schemas.DeidScan.from_orm(scan) for scan in query_result.scalars().all()
-    ]
-
-    return scan_list
+    scans = modify_acquisition_date_format(query_result.scalars().all())
+    scans.sort(key=attrgetter("acquisition_date"))
+    return scans
 
 
 async def create_scan(deid_CT_scan: schemas.ScanCreate, db: AsyncSession):

@@ -28,3 +28,5 @@ class DeidScan(Scan):
     created_at: datetime
     updated_at: Optional[datetime]
     status: str
+    in_or_ex: str
+    timepoint: int
