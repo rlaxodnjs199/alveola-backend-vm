@@ -17,3 +17,5 @@ class Scan(Base):
     in_or_ex = Column(String, nullable=False)
     timepoint = Column(Integer, nullable=False, default=0)
     path = Column(String)
+    vida_case_id = Column(Integer)
+    vida_path = Column(String)
