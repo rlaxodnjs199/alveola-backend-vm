@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Date, DateTime
+from sqlalchemy import Column, String, Date, DateTime, Integer
 from sqlalchemy.sql import func
 from app.db.pgsql.base_model import Base
 
@@ -14,4 +14,6 @@ class Scan(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     worker = Column(String)
     status = Column(String, default="De-identified")
+    in_or_ex = Column(String, nullable=False)
+    timepoint = Column(Integer, nullable=False, default=0)
     path = Column(String)
