@@ -18,4 +18,3 @@ class Scan(Base):
     timepoint = Column(Integer, nullable=False, default=0)
     path = Column(String)
     vida_case_id = Column(Integer)
-    vida_path = Column(String)
