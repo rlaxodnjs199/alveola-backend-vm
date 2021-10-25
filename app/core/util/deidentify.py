@@ -17,7 +17,7 @@ async def execute(raw_CT_scan: Scan, db: AsyncSession) -> List[ScanCreate]:
         try:
             raw_dcm_dir_path = f"{settings.RAW_CT_PATH}/"
             raw_dcm_dir_path += (
-                "DCM_{acquisition_date}_{project}_{participant_id}_{worker}".format(
+                "DCM_{acquisition_date}_{project}_{pid}_{worker}".format(
                     **raw_CT_scan.dict()
                 )
             )
@@ -54,7 +54,7 @@ async def execute(raw_CT_scan: Scan, db: AsyncSession) -> List[ScanCreate]:
         project: str, pid: str, in_or_ex: str, db: AsyncSession
     ):
         stmt = text(
-            f"SELECT MAX(timepoint) FROM {settings.DB_TABLE_SCAN} WHERE project='{project}' AND participant_id='{pid}' AND in_or_ex='{in_or_ex}'"
+            f"SELECT MAX(timepoint) FROM {settings.DB_TABLE_SCAN} WHERE project='{project}' AND pid='{pid}' AND in_or_ex='{in_or_ex}'"
         )
         result = await db.execute(stmt)
         max_timepoint = result.scalars().first()
@@ -127,7 +127,7 @@ async def execute(raw_CT_scan: Scan, db: AsyncSession) -> List[ScanCreate]:
         print(raw_CT_scan, deid_dcm_dirname, in_or_ex, timepoint)
         deid_CT_scan = ScanCreate(
             project=raw_CT_scan.project,
-            participant_id=raw_CT_scan.participant_id,
+            pid=raw_CT_scan.pid,
             acquisition_date=raw_CT_scan.acquisition_date.strftime("%Y%m%d"),
             worker=raw_CT_scan.worker,
             folder_name=deid_dcm_dirname,
@@ -196,7 +196,7 @@ async def execute(raw_CT_scan: Scan, db: AsyncSession) -> List[ScanCreate]:
             # )
             continue
         timepoint = await _calc_scan_timepoint(
-            raw_CT_scan.project, raw_CT_scan.participant_id, in_or_ex, db
+            raw_CT_scan.project, raw_CT_scan.pid, in_or_ex, db
         )
         deid_CT_scan = _construct_deid_CT_scan(
             raw_CT_scan, deid_dcm_dirname, in_or_ex, timepoint

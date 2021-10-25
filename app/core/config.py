@@ -20,6 +20,9 @@ class GlobalConfig(BaseSettings):
     DEID_CT_PATH = config("DEID_CT_PATH", default="Path not set")
     VIDA_PROCESSED_CT_PATH = config("VIDA_PROCESSED_CT_PATH", default="Path not set")
     DB_TABLE_SCAN = config("DB_TABLE_SCAN")
+    POSTGRES_DB = config("POSTGRES_DB")
+    POSTGRES_USER = config("POSTGRES_USER")
+    POSTGRES_PASSWORD = config("POSTGRES_PASSWORD")
 
     class Config:
         case_sensitive = True

@@ -5,7 +5,7 @@ from pydantic import BaseModel, validator
 
 class Scan(BaseModel):
     project: str
-    participant_id: str
+    pid: str
     acquisition_date: date
     worker: str
 

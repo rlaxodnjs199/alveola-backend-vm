@@ -3,5 +3,4 @@
 .direnv/
 __pycache__/
 assets/
-versions/
 .vscode/

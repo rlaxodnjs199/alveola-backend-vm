@@ -12,7 +12,8 @@ from app.db.pgsql.base import Base
 # access to the values within the .ini file in use.
 config = context.config
 config.set_main_option(
-    "sqlalchemy.url", "postgresql+psycopg2://postgres:postgres@localhost:5432"
+    "sqlalchemy.url",
+    f"postgresql+psycopg2://{settings.POSTGRES_USER}:{settings.POSTGRES_PASSWORD}@localhost:5432/{settings.POSTGRES_DB}",
 )
 target_metadata = Base.metadata
 

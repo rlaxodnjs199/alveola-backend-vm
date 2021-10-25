@@ -8,7 +8,7 @@ class Scan(Base):
 
     folder_name = Column(String, nullable=False, unique=True)
     project = Column(String, nullable=False)
-    participant_id = Column(String, nullable=False)
+    pid = Column(String, nullable=False)
     acquisition_date = Column(Date, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
