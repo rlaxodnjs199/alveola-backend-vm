@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from app.api.v1.scan import schemas
 
 from app.core.config import settings
-from app.core.script import deidentify
+from app.core.util import deidentify
 from app.db.pgsql.session import get_db
 from . import util
 
