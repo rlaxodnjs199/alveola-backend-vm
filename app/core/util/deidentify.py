@@ -127,7 +127,7 @@ async def execute(raw_CT_scan: Scan, db: AsyncSession) -> List[ScanCreate]:
         print(raw_CT_scan, deid_dcm_dirname, in_or_ex, timepoint)
         deid_CT_scan = ScanCreate(
             project=raw_CT_scan.project,
-            pid=raw_CT_scan.pid,
+            participant_id=raw_CT_scan.pid,
             acquisition_date=raw_CT_scan.acquisition_date.strftime("%Y%m%d"),
             worker=raw_CT_scan.worker,
             folder_name=deid_dcm_dirname,
