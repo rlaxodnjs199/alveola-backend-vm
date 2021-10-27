@@ -15,13 +15,15 @@ class EnvEnum(str, Enum):
 class GlobalConfig(BaseSettings):
     DEBUG: bool
     ENV: EnvEnum
-    RAW_CT_PATH = config("RAW_CT_PATH", default="Path not set")
-    DEID_CT_PATH = config("DEID_CT_PATH", default="Path not set")
-    VIDA_PROCESSED_CT_PATH = config("VIDA_PROCESSED_CT_PATH", default="Path not set")
-    DB_TABLE_SCAN = config("DB_TABLE_SCAN")
-    POSTGRES_DB = config("POSTGRES_DB")
-    POSTGRES_USER = config("POSTGRES_USER")
-    POSTGRES_PASSWORD = config("POSTGRES_PASSWORD")
+    RAW_CT_PATH: str = config("RAW_CT_PATH", default="Path not set")
+    DEID_CT_PATH: str = config("DEID_CT_PATH", default="Path not set")
+    VIDA_PROCESSED_CT_PATH: str = config(
+        "VIDA_PROCESSED_CT_PATH", default="Path not set"
+    )
+    DB_TABLE_SCAN: str = config("DB_TABLE_SCAN")
+    POSTGRES_DB: str = config("POSTGRES_DB")
+    POSTGRES_USER: str = config("POSTGRES_USER")
+    POSTGRES_PASSWORD: str = config("POSTGRES_PASSWORD")
     DB_URL: str = f"postgresql+asyncpg://{POSTGRES_USER}:{POSTGRES_PASSWORD}@127.0.0.1:5432/{POSTGRES_DB}"
 
     class Config:
