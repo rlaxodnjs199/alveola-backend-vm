@@ -7,7 +7,7 @@ class Scan(BaseModel):
     project: str
     pid: str
     acquisition_date: date
-    worker: str
+    processed_by: str
 
     @validator("acquisition_date", pre=True)
     def parse_acquisition_date(cls, value):

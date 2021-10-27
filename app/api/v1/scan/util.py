@@ -21,11 +21,11 @@ def parse_subdirectories_in_path(path: str) -> List[Dict]:
     try:
         for subdir in subdirs:
             dict = {}
-            _, date, project, pid, worker = subdir.split("_")
+            _, date, project, pid, processed_by = subdir.split("_")
             dict["acquisition_date"] = date
             dict["project"] = project
             dict["pid"] = pid
-            dict["worker"] = worker
+            dict["processed_by"] = processed_by
 
             ct_scan_list.append(dict)
     except:

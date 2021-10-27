@@ -17,7 +17,7 @@ async def execute(raw_CT_scan: Scan, db: AsyncSession) -> List[ScanCreate]:
         try:
             raw_dcm_dir_path = f"{settings.RAW_CT_PATH}/"
             raw_dcm_dir_path += (
-                "DCM_{acquisition_date}_{project}_{pid}_{worker}".format(
+                "DCM_{acquisition_date}_{project}_{pid}_{processed_by}".format(
                     **raw_CT_scan.dict()
                 )
             )
@@ -129,7 +129,7 @@ async def execute(raw_CT_scan: Scan, db: AsyncSession) -> List[ScanCreate]:
             project=raw_CT_scan.project,
             participant_id=raw_CT_scan.pid,
             acquisition_date=raw_CT_scan.acquisition_date.strftime("%Y%m%d"),
-            worker=raw_CT_scan.worker,
+            processed_by=raw_CT_scan.processed_by,
             folder_name=deid_dcm_dirname,
             path=f"{settings.DEID_CT_PATH}/{deid_dcm_dirname}",
             in_or_ex=in_or_ex,

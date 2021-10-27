@@ -12,7 +12,7 @@ class Scan(Base):
     acquisition_date = Column(Date, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-    worker = Column(String)
+    processed_by = Column(String)
     status = Column(String, default="De-identified")
     in_or_ex = Column(String, nullable=False)
     timepoint = Column(Integer, nullable=False, default=0)
