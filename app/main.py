@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
 
 from app.core.config import settings
+from app.core.util.watch_path import OnWatch
 from app.api.v1.scan.endpoints import scan_router
 from app.db.pgsql.session import init_db
 
@@ -25,6 +26,7 @@ app.add_middleware(
 async def on_startup():
     await init_db()
     logger.info("DB session created")
+    OnWatch('temp').run()
 
 
 @app.get("/", tags=["root"])
