@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from app.api.v1.scan import schemas
 
 from app.core.config import settings
-from app.core.util import deidentify
+from app.core.util import deidentify_dicom
 from app.db.pgsql.session import get_db
 from . import util
 
@@ -37,7 +37,7 @@ async def get_deid_scan_by_id(scan_id: int, db=Depends(get_db)):
 
 @scan.post("/deid")
 async def create_deid_CT_scan(raw_CT_scan: schemas.Scan, db=Depends(get_db)):
-    deid_CT_scan_list = deidentify.execute(raw_CT_scan, db)
+    deid_CT_scan_list = deidentify_dicom.execute(raw_CT_scan, db)
     async for deid_CT_scan in deid_CT_scan_list:
         await util.create_scan(deid_CT_scan, db)
 
