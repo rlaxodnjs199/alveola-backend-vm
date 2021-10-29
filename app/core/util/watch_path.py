@@ -5,7 +5,7 @@ from watchdog.events import FileSystemEventHandler
 
 
 
-class OnWatch:
+class WatchPath:
     def __init__(self, path):
         self.observer = Observer()
         self.path = path
