@@ -65,3 +65,6 @@ def delete_scan():
 
 def update_scan():
     return
+
+def update_emphysema_score():
+    return

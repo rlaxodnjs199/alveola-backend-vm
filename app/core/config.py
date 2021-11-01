@@ -1,5 +1,6 @@
 from functools import lru_cache
 from enum import Enum
+from pathlib import Path
 from typing import Optional
 from starlette.config import Config
 from pydantic import BaseSettings
@@ -20,6 +21,7 @@ class GlobalConfig(BaseSettings):
     VIDA_PROCESSED_CT_PATH: str = config(
         "VIDA_PROCESSED_CT_PATH", default="Path not set"
     )
+    VIDA_RESULT_PATH: Path = Path(config("VIDA_RESULT_PATH", default="Path not set"))
     DB_TABLE_SCAN: str = config("DB_TABLE_SCAN")
     POSTGRES_DB: str = config("POSTGRES_DB")
     POSTGRES_USER: str = config("POSTGRES_USER")
