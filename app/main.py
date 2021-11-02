@@ -3,7 +3,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
 
 from app.core.config import settings
-from app.core.util.watchdog import VidaImportWatcher
 from app.api.v1.scan.endpoints import scan_router
 from app.db.pgsql.session import init_db
 
@@ -24,9 +23,8 @@ app.add_middleware(
 
 @app.on_event("startup")
 async def on_startup():
-    # await init_db()
-    # logger.info("DB session created")
-    await VidaImportWatcher.run()
+    await init_db()
+    logger.info("DB session created")
 
 
 @app.get("/", tags=["root"])

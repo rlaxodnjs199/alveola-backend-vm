@@ -18,9 +18,6 @@ class GlobalConfig(BaseSettings):
     ENV: EnvEnum
     RAW_CT_PATH: str = config("RAW_CT_PATH", default="Path not set")
     DEID_CT_PATH: str = config("DEID_CT_PATH", default="Path not set")
-    VIDA_PROCESSED_CT_PATH: str = config(
-        "VIDA_PROCESSED_CT_PATH", default="Path not set"
-    )
     VIDA_RESULT_PATH: Path = Path(config("VIDA_RESULT_PATH", default="Path not set"))
     DB_TABLE_SCAN: str = config("DB_TABLE_SCAN")
     POSTGRES_DB: str = config("POSTGRES_DB")
