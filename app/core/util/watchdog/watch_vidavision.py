@@ -4,6 +4,7 @@ from watchdog.events import FileSystemEventHandler, RegexMatchingEventHandler
 from watchdog.observers import Observer
 
 from app.core.config import settings
+from .util import update_db_on_vida_import
 
 EVENT_TYPE_MOVED = "moved"
 EVENT_TYPE_DELETED = "deleted"
@@ -68,6 +69,7 @@ class VidaImportHandler(RegexMatchingEventHandler):
     async def on_created(event):
         if event.is_directory:
             logger.info(f"New VIDA case imported: {event.src_path}")
+            # await update_db_on_vida_import()
 
     @staticmethod
     async def on_any_event(event):

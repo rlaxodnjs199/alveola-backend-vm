@@ -5,9 +5,7 @@ from operator import attrgetter
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import HTTPException
 from sqlalchemy import select
-from app.api.v1.scan import schemas
-
-from . import models
+from app.api.v1.scan import schemas, models
 
 
 def _get_top_level_subdirectories(path: str) -> List[str]:
@@ -65,6 +63,7 @@ def delete_scan():
 
 def update_scan():
     return
+
 
 def update_emphysema_score():
     return
