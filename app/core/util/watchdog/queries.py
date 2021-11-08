@@ -1,16 +1,14 @@
 from datetime import datetime
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update
 from app.api.v1.scan import models
+from app.core.config import settings
+from app.db.pgsql.session import get_db
 
 
 async def update_db_on_vida_import(
-    pid: str,
-    acquisition_date: datetime,
-    vida_case_id: int,
-    vida_result_path: str,
-    db: AsyncSession,
+    pid: str, acquisition_date: datetime, vida_case_id: int
 ):
+    vida_result_path = settings.VIDA_RESULT_PATH + vida_case_id
     stmt = (
         update(models.Scan)
         .where(models.Scan.pid == pid)
@@ -19,6 +17,7 @@ async def update_db_on_vida_import(
         .values(models.Scan.vida_result_path == vida_result_path)
         .execution_options(synchronize_session="fetch")
     )
+    db = get_db()
     query_result = await db.execute(stmt)
 
 

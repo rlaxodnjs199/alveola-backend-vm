@@ -1,4 +1,5 @@
 import os
+import copy
 from typing import List, Union
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -7,7 +8,6 @@ from pydicom import Dataset, dcmread
 from app.core.config import settings
 from app.api.v1.scan.schemas import Scan, ScanCreate
 
-
 TLC_FOLDER_SYNTAX = "TLC"
 FRC_FOLDER_SYNTAX = "RV"
 
@@ -15,13 +15,14 @@ FRC_FOLDER_SYNTAX = "RV"
 async def execute(raw_CT_scan: Scan, db: AsyncSession) -> List[ScanCreate]:
     def _get_raw_dcm_dir_path(raw_CT_scan: Scan):
         try:
+            scan = copy.deepcopy(raw_CT_scan)
+            scan.acquisition_date = scan.acquisition_date.strftime("%Y%m%d")
             raw_dcm_dir_path = f"{settings.RAW_CT_PATH}/"
             raw_dcm_dir_path += (
-                "DCM_{acquisition_date}_{project}_{pid}_{worker}".format(
-                    **raw_CT_scan.dict()
+                "DCM_{acquisition_date}_{project}_{pid}_{processed_by}".format(
+                    **scan.dict()
                 )
             )
-            raw_dcm_dir_path = raw_dcm_dir_path.replace("-", "")
         except:
             raise HTTPException(status_code=400, detail="Raw CT folder syntax error")
         return raw_dcm_dir_path
@@ -129,9 +130,9 @@ async def execute(raw_CT_scan: Scan, db: AsyncSession) -> List[ScanCreate]:
             project=raw_CT_scan.project,
             pid=raw_CT_scan.pid,
             acquisition_date=raw_CT_scan.acquisition_date.strftime("%Y%m%d"),
-            worker=raw_CT_scan.worker,
-            folder_name=deid_dcm_dirname,
-            path=f"{settings.DEID_CT_PATH}/{deid_dcm_dirname}",
+            processed_by=raw_CT_scan.processed_by,
+            folder_name=f"{deid_dcm_dirname}.{in_or_ex}",
+            deid_scan_path=f"{settings.DEID_CT_PATH}/{deid_dcm_dirname}",
             in_or_ex=in_or_ex,
             timepoint=timepoint,
         )

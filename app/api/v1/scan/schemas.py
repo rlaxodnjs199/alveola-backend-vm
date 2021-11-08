@@ -18,7 +18,6 @@ class Scan(BaseModel):
 
 
 class ScanCreate(Scan):
-    path: str
     folder_name: str
     in_or_ex: str
     timepoint: int

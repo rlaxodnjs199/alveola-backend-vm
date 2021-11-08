@@ -53,8 +53,7 @@ async def create_scan(deid_CT_scan: schemas.ScanCreate, db: AsyncSession):
     db.add(scan_to_insert)
     await db.commit()
     await db.refresh(scan_to_insert)
-
-    return {"msg": f"Add scan {deid_CT_scan.folder_name} success"}
+    print(f"Add scan {deid_CT_scan.folder_name} success")
 
 
 def delete_scan():
