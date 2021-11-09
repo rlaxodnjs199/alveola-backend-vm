@@ -1,5 +1,6 @@
 import os
 import asyncio
+from datetime import datetime
 from pydicom import dcmread
 from loguru import logger
 from watchdog.events import FileSystemEventHandler, RegexMatchingEventHandler
@@ -65,12 +66,20 @@ class VidaImportHandler(RegexMatchingEventHandler):
     def _is_dicom_folder(self, event):
         return event.src_path.split("/")[-1] == "dicom"
 
-    def _get_pid_and_acq_date(self, dcm_file_path):
+    def _get_dcm_headers(self, dcm_file_path):
         dcm = dcmread(dcm_file_path)
-        return dcm.PatientID, dcm.AcquisitionDate
+        acquisition_date = datetime.strptime(dcm.AcquisitionDate, "%Y%m%d").date()
+        in_or_ex = (
+            "IN"
+            if "TLC" in dcm.SeriesDescription.upper()
+            or "INSPIRATION" in dcm.SeriesDescription.upper()
+            else "EX"
+        )
+        return dcm.PatientID, acquisition_date, in_or_ex
 
     def _is_dcm_header_valid(self, pid, acquisition_date):
-        return
+        logger.debug(pid, acquisition_date)
+        return True
 
     def dispatch(self, event):
         handler = self._method_map[event.event_type]
@@ -79,14 +88,15 @@ class VidaImportHandler(RegexMatchingEventHandler):
 
     async def on_created(self, event):
         if event.is_directory and self._is_dicom_folder(event):
-            vida_case_id = event.src_path.split("/")[-2]
-            logger.info("New VIDA case created - % s" % vida_case_id)
+            vida_case_id = int(event.src_path.split("/")[-2])
+            logger.info(f"New VIDA case imported - {vida_case_id}")
             await asyncio.sleep(5)
             dcm_file_path = os.path.join(event.src_path, os.listdir(event.src_path)[0])
-            pid, acquisition_date = self._get_pid_and_acq_date(dcm_file_path)
-            logger.debug(pid, acquisition_date)
+            pid, acquisition_date, in_or_ex = self._get_dcm_headers(dcm_file_path)
             if self._is_dcm_header_valid(pid, acquisition_date):
-                update_db_on_vida_import(pid, acquisition_date, vida_case_id)
+                await update_db_on_vida_import(
+                    pid, acquisition_date, in_or_ex, vida_case_id
+                )
             else:
                 logger.warning(
                     f"New Vida case {vida_case_id} does not have valid dcm headers - pid: {pid}, acq_date: {acquisition_date}"
@@ -131,37 +141,7 @@ class DLSegmentationHandler(FileSystemEventHandler):
             logger.info("Watchdog received closed event - % s." % event.src_path)
 
 
-class VidaImportHandler2(FileSystemEventHandler):
-    def _is_dicom_folder(self, event):
-        return event.src_path.split("/")[-1] == "dicom"
-
-    def _get_pid_and_acq_date(self, dicom_image_path):
-        dcm = dcmread(dicom_image_path)
-        return dcm.PatientID, dcm.AcquisitionDate
-
-    async def on_any_event(self, event):
-        if event.event_type == "created":
-            if event.is_directory and self._is_dicom_folder(event):
-                vida_case_id = event.src_path.split("/")[-2]
-                logger.info(
-                    "Watchdog received vida case created event - % s" % vida_case_id
-                )
-                await asyncio.sleep(10)
-                pid, acquisition_date = self._get_pid_and_acq_date(
-                    os.listdir(event.src_path)[0]
-                )
-                logger.debug(pid, acquisition_date)
-        # elif event.event_type == "modified":
-        #     logger.info("Watchdog received modified event - % s." % event.src_path)
-        # elif event.event_type == "moved":
-        #     logger.info("Watchdog received moved event - % s." % event.src_path)
-        # elif event.event_type == "deleted":
-        #     logger.info("Watchdog received deleted event - % s." % event.src_path)
-        # else:
-        #     logger.info("Watchdog received closed event - % s." % event.src_path)
-
-
-class VidaProcessingHandler(FileSystemEventHandler):
+class VidaProcessCompleteHandler(FileSystemEventHandler):
     pass
 
 

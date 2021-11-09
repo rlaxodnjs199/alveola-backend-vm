@@ -12,6 +12,10 @@ TLC_FOLDER_SYNTAX = "TLC"
 FRC_FOLDER_SYNTAX = "RV"
 
 
+# class DicomDeIdentifier:
+#     pass
+
+
 async def execute(raw_CT_scan: Scan, db: AsyncSession) -> List[ScanCreate]:
     def _get_raw_dcm_dir_path(raw_CT_scan: Scan):
         try:
