@@ -17,3 +17,7 @@ async def get_db() -> AsyncSession:
     async with async_session() as session:
         yield session
         await session.commit()
+
+
+async def close_db():
+    await engine.dispose()

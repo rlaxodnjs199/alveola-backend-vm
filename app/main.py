@@ -4,7 +4,7 @@ from loguru import logger
 
 from app.core.config import settings
 from app.api.v1.scan.endpoints import scan_router
-from app.db.pgsql.session import init_db
+from app.db.pgsql.session import init_db, close_db
 
 
 app = FastAPI(debug=settings.DEBUG)
@@ -25,6 +25,12 @@ app.add_middleware(
 async def on_startup():
     await init_db()
     logger.info("DB session created")
+
+
+@app.on_event("shutdown")
+async def on_shutdown():
+    await close_db()
+    logger.info("DB session closed")
 
 
 @app.get("/", tags=["root"])
